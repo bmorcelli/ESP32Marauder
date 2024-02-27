@@ -217,12 +217,10 @@ void setup()
 
   // Draw the title screen
   #ifdef HAS_SCREEN
-    #ifndef MARAUDER_MINI
-      display_obj.drawJpeg("/marauder3L.jpg", 0 , 0);     // 240 x 320 image
-    #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
+    #if defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
       display_obj.drawJpeg("/marauder240_135.jpg", 0 , -90); // 240 x 135 image
     #else
-      display_obj.drawJpeg("/marauder3L.jpg", 0, 0);
+      display_obj.drawJpeg("/marauder3L.jpg", 0 , 0);     // 240 x 320 image
     #endif
   #endif
 
