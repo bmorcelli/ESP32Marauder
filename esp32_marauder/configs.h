@@ -212,7 +212,7 @@
       #define D_BTN 35
     #endif
 
-    #if MARAUDER_M5STICKC
+    #ifdef MARAUDER_M5STICKC
       #define L_BTN -1
       #define C_BTN 37
       #define U_BTN -1
