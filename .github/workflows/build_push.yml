@@ -212,6 +212,7 @@ jobs:
           
       - name: Configure configs.h for Flipper Zero WiFi Dev Board
         run: |
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_M5STICKC/  \/\/#define MARAUDER_M5STICKC/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
@@ -251,6 +252,7 @@ jobs:
           find /home/runner/ -name "*TFT_eSPI*"          
           sed -i 's/^#include <User_Setup_marauder_mini.h>/\/\/#include <User_Setup_marauder_mini.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
           sed -i 's/^\/\/#include <User_Setup_og_marauder.h>/#include <User_Setup_og_marauder.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  \/\/#define MARAUDER_V4/  #define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
@@ -276,6 +278,7 @@ jobs:
         run: |
           sed -i 's/^#include <User_Setup_marauder_mini.h>/\/\/#include <User_Setup_marauder_mini.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
           sed -i 's/^\/\/#include <User_Setup_og_marauder.h>/#include <User_Setup_og_marauder.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  \/\/#define MARAUDER_V6/  #define MARAUDER_V6/' esp32_marauder/configs.h
@@ -316,6 +319,7 @@ jobs:
           
       - name: Configure TFT_eSPI and configs.h for Marauder v6.1
         run: |
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
@@ -341,6 +345,7 @@ jobs:
         run: |
           sed -i 's/^#include <User_Setup_marauder_mini.h>/\/\/#include <User_Setup_marauder_mini.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
           sed -i 's/^\/\/#include <User_Setup_og_marauder.h>/#include <User_Setup_og_marauder.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
@@ -367,6 +372,7 @@ jobs:
           sed -i 's/^\/\/#include <User_Setup_marauder_mini.h>/#include <User_Setup_marauder_mini.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
           sed -i 's/^#include <User_Setup_og_marauder.h>/\/\/#include <User_Setup_og_marauder.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
           sed -i 's/^  \/\/#define MARAUDER_MINI/  #define MARAUDER_MINI/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6_1/  \/\/#define MARAUDER_V6_1/' esp32_marauder/configs.h
@@ -389,6 +395,7 @@ jobs:
           
       - name: Configure TFT_eSPI and configs.h for ESP32 LDDB
         run: |
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
@@ -412,6 +419,7 @@ jobs:
 
       - name: Configure TFT_eSPI and configs.h for Marauder Dev Board Pro
         run: |
+          sed -i 's/^  #define MARAUDER_M5STICKCP2/  \/\/#define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
@@ -477,8 +485,8 @@ jobs:
           sed -i 's/^  #define MARAUDER_FLIPPER/  \/\/#define MARAUDER_FLIPPER/' esp32_marauder/configs.h
           sed -i 's/^  #define ESP32_LDDB/  \/\/#define ESP32_LDDB/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_DEV_BOARD_PRO/  \/\/#define MARAUDER_DEV_BOARD_PRO/' esp32_marauder/configs.h
-          sed -i 's/^  \/\/#define MARAUDER_M5STICKC/  #define MARAUDER_M5STICKC/' esp32_marauder/configs.h
-      #    sed -i 's/^  \/\/#define MARAUDER_M5STICKCP2/  #define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h       
+          sed -i 's/^  #define MARAUDER_M5STICKC/  \/\/#define MARAUDER_M5STICKC/' esp32_marauder/configs.h
+          sed -i 's/^  \/\/#define MARAUDER_M5STICKCP2/  #define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h       
 
       - name: Build Marauder for Marauder M5StickC Plus 2
         uses: ArminJo/arduino-test-compile@v3.2.1
@@ -491,7 +499,6 @@ jobs:
       - name: Rename Marauder M5StickC plus 2 bin
         run: |
           mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bin ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.bin
-          mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.elf ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.elf
 
       - name: Display finished bins
         run: |
@@ -564,7 +571,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: esp32_marauder.m5stickc_plus2.bin
-          path: ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.*
+          path: ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.bin
           retention-days: 5
           
       - name: 'Upload Marauder M5StickC Plus Artifact'
