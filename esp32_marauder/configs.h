@@ -7,8 +7,8 @@
   #define POLISH_POTATO
 
   //// BOARD TARGETS
-  //#define MARAUDER_M5STICKC
-  #define MARAUDER_MINI
+  #define MARAUDER_M5STICKC
+  //#define MARAUDER_MINI
   //#define MARAUDER_V4
   //#define MARAUDER_V6
   //#define MARAUDER_V6_1
@@ -212,7 +212,7 @@
     #ifdef MARAUDER_M5STICKC
       #define L_BTN -1
       #define C_BTN 37
-      #define U_BTN -1
+      #define U_BTN 35 //-1
       #define R_BTN -1
       #define D_BTN 39
     #endif
@@ -245,9 +245,9 @@
       #define TFT_MOSI 15
       #define TFT_SCLK 13
       #define TFT_CS 5
-      #define TFT_DC 23
-      #define TFT_RST 18
-      #define TFT_BL -1
+      #define TFT_DC 14
+      #define TFT_RST 12
+      #define TFT_BL 27
       #define TOUCH_CS -1
       //#define SD_CS 1
 
