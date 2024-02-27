@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 
-#define STICKC_LED_PIN 10
+#define STICKC_LED_PIN 19
 
 extern Settings settings_obj;
 
