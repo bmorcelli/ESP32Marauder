@@ -149,7 +149,7 @@ jobs:
       - name: Create Complete Firmware Binary (Bootloader/Partitions/App)
         run: |
           set -x
-          esptool.py --chip esp32 merge_bin --output esp32_marauder.m5stickc_plus2.Complete.bin \
+          esptool.py --chip esp32 merge_bin --output esp32_marauder.m5stickc_plus2_Complete.bin \
               0x1000 esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.partitions.bin \
               0x8000 esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bootloader.bin \
               0x10000 esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bin
@@ -172,6 +172,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: esp32_marauder.m5stickc_plus2.bin
-          path: ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.*
+          path: ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2*.bin
           retention-days: 5
           
