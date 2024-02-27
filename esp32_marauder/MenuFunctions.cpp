@@ -519,7 +519,7 @@ void MenuFunctions::main(uint32_t currentTime)
       if ((wifi_scan_obj.currentScanMode != LV_JOIN_WIFI) &&
           (wifi_scan_obj.currentScanMode != LV_ADD_SSID))
         this->updateStatusBar();
-        //#if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+        //#if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
         //  display_obj.updateBanner(current_menu->name);
         //#endif
     }
@@ -748,7 +748,7 @@ void MenuFunctions::main(uint32_t currentTime)
 
   #ifdef HAS_BUTTONS
     #if !(defined(MARAUDER_V6) || defined(MARAUDER_V6_1))
-      #ifndef MARAUDER_M5STICKC
+      #if !(defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
         if (u_btn.justPressed()){
           if ((wifi_scan_obj.currentScanMode == WIFI_SCAN_OFF) ||
               (wifi_scan_obj.currentScanMode == OTA_UPDATE)) {
@@ -931,7 +931,7 @@ void MenuFunctions::updateStatusBar()
 {
   display_obj.tft.setTextSize(1);
   
-  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     display_obj.tft.setFreeFont(NULL);
   #endif
   
@@ -973,7 +973,7 @@ void MenuFunctions::updateStatusBar()
       display_obj.tft.drawString("CH: " + (String)wifi_scan_obj.set_channel, 50, 0, 2);
     #endif
 
-    #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+    #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
       display_obj.tft.drawString("CH: " + (String)wifi_scan_obj.set_channel, TFT_WIDTH/4, 0, 1);
     #endif
   }
@@ -987,7 +987,7 @@ void MenuFunctions::updateStatusBar()
       display_obj.tft.drawString((String)wifi_scan_obj.free_ram + "B", 100, 0, 2);
     #endif
 
-    #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+    #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
       display_obj.tft.drawString((String)wifi_scan_obj.free_ram + "B", TFT_WIDTH/1.75, 0, 1);
     #endif
   }
@@ -1028,7 +1028,7 @@ void MenuFunctions::updateStatusBar()
                                 the_color);
   #endif
 
-  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     display_obj.tft.setTextColor(the_color, STATUSBAR_COLOR);
     display_obj.tft.drawString("SD", TFT_WIDTH - 12, 0, 1);
   #endif
@@ -1037,7 +1037,7 @@ void MenuFunctions::updateStatusBar()
 void MenuFunctions::drawStatusBar()
 {
   display_obj.tft.setTextSize(1);
-  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     display_obj.tft.setFreeFont(NULL);
   #endif
   display_obj.tft.fillRect(0, 0, 240, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
@@ -1078,7 +1078,7 @@ void MenuFunctions::drawStatusBar()
     display_obj.tft.drawString("CH: " + (String)wifi_scan_obj.set_channel, 50, 0, 2);
   #endif
 
-  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     display_obj.tft.drawString("CH: " + (String)wifi_scan_obj.set_channel, TFT_WIDTH/4, 0, 1);
   #endif
 
@@ -1090,7 +1090,7 @@ void MenuFunctions::drawStatusBar()
     display_obj.tft.drawString((String)wifi_scan_obj.free_ram + "B", 100, 0, 2);
   #endif
 
-  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     display_obj.tft.drawString((String)wifi_scan_obj.free_ram + "B", TFT_WIDTH/1.75, 0, 1);
   #endif
 
@@ -1129,7 +1129,7 @@ void MenuFunctions::drawStatusBar()
                                 the_color);
   #endif
 
-  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+  #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     display_obj.tft.setTextColor(the_color, STATUSBAR_COLOR);
     display_obj.tft.drawString("SD", TFT_WIDTH - 12, 0, 1);
   #endif
@@ -1517,7 +1517,7 @@ void MenuFunctions::RunSetup()
               this->buildButtons(&htmlMenu);
               this->displayCurrentMenu();
             }
-            #ifndef MARAUDER_M5STICKC
+            #if !(defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
               if (u_btn.justPressed()) {
                 if (evil_portal_obj.selected_html_index < evil_portal_obj.html_files->size() - 1)
                   evil_portal_obj.selected_html_index++;
@@ -1836,7 +1836,7 @@ void MenuFunctions::RunSetup()
     #ifdef HAS_BUTTONS
       #if !(defined(MARAUDER_V6) || defined(MARAUDER_V6_1))
         while(true) {
-          #ifndef MARAUDER_M5STICKC
+          #if !(defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
             // Cycle char previous
             if (l_btn.justPressed()) {
               pressed = true;
@@ -1962,6 +1962,7 @@ void MenuFunctions::showMenuList(Menu * menu, int layer)
 // Function to add MenuNodes to a menu
 void MenuFunctions::addNodes(Menu * menu, String name, uint16_t color, Menu * child, int place, std::function<void()> callable, bool selected, String command)
 {
+  Serial.println(name);
   TFT_eSPI_Button new_button;
   menu->list->add(MenuNode{name, false, color, place, &new_button, selected, callable});
   //menu->list->add(MenuNode{name, false, color, place, selected, callable});
@@ -2011,7 +2012,7 @@ void MenuFunctions::displayCurrentMenu(uint8_t start_index)
       display_obj.tft.setFreeFont(MENU_FONT);
     #endif
 
-    #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+    #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
       display_obj.tft.setFreeFont(NULL);
       display_obj.tft.setTextSize(1);
     #endif
@@ -2034,7 +2035,7 @@ void MenuFunctions::displayCurrentMenu(uint8_t start_index)
 
       #endif
 
-      #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC)
+      #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
         if ((current_menu->selected == i) || (current_menu->list->get(i).selected))
           display_obj.key[i - start_index].drawButton(true, current_menu->list->get(i).name);
         else 

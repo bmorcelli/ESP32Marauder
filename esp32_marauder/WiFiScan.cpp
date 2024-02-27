@@ -647,7 +647,7 @@ void WiFiScan::startWiFiAttacks(uint8_t scan_mode, uint16_t color, String title_
     flipper_led.attackLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.attackLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.attackLED();
   #else
     led_obj.setMode(MODE_ATTACK);
@@ -672,7 +672,7 @@ bool WiFiScan::shutdownWiFi() {
       flipper_led.offLED();
     #elif defined(XIAO_ESP32_S3)
       xiao_led.offLED();
-    #elif defined(MARAUDER_M5STICKC)
+    #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
       stickc_led.offLED();
     #else
       led_obj.setMode(MODE_OFF);
@@ -699,7 +699,7 @@ bool WiFiScan::shutdownBLE() {
         flipper_led.offLED();
       #elif defined(XIAO_ESP32_S3)
         xiao_led.offLED();
-      #elif defined(MARAUDER_M5STICKC)
+      #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
         stickc_led.offLED();
       #else
         led_obj.setMode(MODE_OFF);
@@ -960,7 +960,7 @@ void WiFiScan::RunEvilPortal(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1003,7 +1003,7 @@ void WiFiScan::RunAPScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1426,7 +1426,7 @@ void WiFiScan::RunPacketMonitor(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1505,7 +1505,7 @@ void WiFiScan::RunEapolScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1646,7 +1646,7 @@ void WiFiScan::RunPwnScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1839,7 +1839,7 @@ void WiFiScan::RunBeaconScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1898,7 +1898,7 @@ void WiFiScan::RunStationScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1942,7 +1942,7 @@ void WiFiScan::RunRawScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -1988,7 +1988,7 @@ void WiFiScan::RunDeauthScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);
@@ -2047,7 +2047,7 @@ void WiFiScan::RunProbeScan(uint8_t scan_mode, uint16_t color)
     flipper_led.sniffLED();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.sniffLED();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     stickc_led.sniffLED();
   #else
     led_obj.setMode(MODE_SNIFF);

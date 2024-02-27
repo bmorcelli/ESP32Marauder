@@ -20,11 +20,11 @@ void Display::RunSetup()
   #endif
   
   tft.init();
-  #ifndef MARAUDER_M5STICKC
+  #if !(defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
     tft.setRotation(0); // Portrait
   #endif
 
-  #ifdef MARAUDER_M5STICKC
+  #if defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
     tft.setRotation(1);
   #endif
 

@@ -21,7 +21,7 @@ bool SDInterface::initSD() {
     pinMode(SD_CS, OUTPUT);
 
     delay(10);
-    #if defined(MARAUDER_M5STICKC)
+    #if defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
       /* Set up SPI SD Card using external pin header
       StickCPlus Header - SPI SD Card Reader
                   3v3   -   3v3

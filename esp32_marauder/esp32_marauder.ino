@@ -39,7 +39,7 @@ https://www.online-utility.org/image/convert/to/XBM
   #include "flipperLED.h"
 #elif defined(XIAO_ESP32_S3)
   #include "xiaoLED.h"
-#elif defined(MARAUDER_M5STICKC)
+#elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
   #include "stickcLED.h"
 #else
   #include "LedInterface.h"
@@ -115,7 +115,7 @@ CommandLine cli_obj;
   SDInterface sd_obj;
 #endif
 
-#ifdef MARAUDER_M5STICKC
+#if (defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
   AXP192 axp192_obj;
 #endif
 
@@ -123,7 +123,7 @@ CommandLine cli_obj;
   flipperLED flipper_led;
 #elif defined(XIAO_ESP32_S3)
   xiaoLED xiao_led;
-#elif defined(MARAUDER_M5STICKC)
+#elif defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
   stickcLED stickc_led;
 #else
   LedInterface led_obj;
@@ -165,7 +165,7 @@ void backlightOff() {
 
 void setup()
 {
-  #ifdef MARAUDER_M5STICKC
+  #if (defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
     axp192_obj.begin();
   #endif
   
@@ -333,7 +333,7 @@ void setup()
     flipper_led.RunSetup();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.RunSetup();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif (defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
     stickc_led.RunSetup();
   #else
     led_obj.RunSetup();
@@ -447,7 +447,7 @@ void loop()
     flipper_led.main();
   #elif defined(XIAO_ESP32_S3)
     xiao_led.main();
-  #elif defined(MARAUDER_M5STICKC)
+  #elif (defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
     stickc_led.main();
   #else
     led_obj.main(currentTime);
