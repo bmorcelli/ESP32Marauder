@@ -14,7 +14,21 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Install M5Stack Boards and Compile TestFile
+        uses: ArminJo/arduino-test-compile@v3.2.1
+        with:
+          sketch-names: TestFile2.ino
+          arduino-board-fqbn: m5stack:esp32:m5stack_stickc_plus2
+          platform-url: https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/package_m5stack_index.json
         
+      - name: Pull M5Stack v2.0.10
+        uses: actions/checkout@v2
+        with:
+          repository: m5stack/arduino-esp32
+          path: M5StackBoards
+
+          
       - name: Install ESP32 Boards and Compile TestFile
         uses: ArminJo/arduino-test-compile@v3.2.1
         with:
@@ -138,6 +152,7 @@ jobs:
           cp User_Setup_marauder_mini.h CustomTFT_eSPI/
           cp User_Setup_og_marauder.h CustomTFT_eSPI/
           cp User_Setup_marauder_m5stickc.h CustomTFT_eSPI/
+          cp User_Setup_marauder_m5stickcp2.h CustomTFT_eSPI/
           pwd
           ls -la
           ls -la CustomTFT_eSPI
@@ -179,6 +194,21 @@ jobs:
             cat "$i" | grep compiler.c.elf.libs.esp32s2
             cat "$i" | grep compiler.c.elf.libs.esp32
           done
+
+      - name: Modify platform.txt in m5stack boards
+        run: |
+          echo "Chicken"
+          for i in $(find /home/runner/.arduino15/packages/m5stack/hardware/esp32/ -name "platform.txt"); do
+            sed -i 's/compiler.c.elf.libs.esp32c3=/compiler.c.elf.libs.esp32c3=-zmuldefs /' "$i"
+            sed -i 's/compiler.c.elf.libs.esp32s3=/compiler.c.elf.libs.esp32s3=-zmuldefs /' "$i"
+            sed -i 's/compiler.c.elf.libs.esp32s2=/compiler.c.elf.libs.esp32s2=-zmuldefs /' "$i"
+            sed -i 's/compiler.c.elf.libs.esp32=/compiler.c.elf.libs.esp32=-zmuldefs /' "$i"
+            cat "$i" | grep compiler.c.elf.libs.esp32c3
+            cat "$i" | grep compiler.c.elf.libs.esp32s3
+            cat "$i" | grep compiler.c.elf.libs.esp32s2
+            cat "$i" | grep compiler.c.elf.libs.esp32
+          done
+          
           
       - name: Configure configs.h for Flipper Zero WiFi Dev Board
         run: |
@@ -426,10 +456,41 @@ jobs:
           sketch-names: esp32_marauder.ino
           arduino-board-fqbn: esp32:esp32:m5stick-c:PartitionScheme=min_spiffs
           extra-arduino-cli-args: "--warnings none"
-          
+
       - name: Rename Marauder M5StickC bin
         run: |
           mv ./esp32_marauder/build/esp32.esp32.m5stick-c/esp32_marauder.ino.bin ./esp32_marauder/build/esp32.esp32.m5stick-c/esp32_marauder.m5stickc_plus.bin
+          
+      - name: Configure TFT_eSPI and configs.h for Marauder M5StickC Plus 2
+        run: |
+          pwd
+          find /home/runner/ -name "*TFT_eSPI*"          
+          sed -i 's/^#include <User_Setup_marauder_mini.h>/\/\/#include <User_Setup_marauder_mini.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
+          sed -i 's/^\/\/#include <User_Setup_marauder_m5stickcp2.h>/#include <User_Setup_marauder_m5stickcp2.h>/' /home/runner/Arduino/libraries/CustomTFT_eSPI/User_Setup_Select.h
+          sed -i 's/^  #define MARAUDER_MINI/  \/\/#define MARAUDER_MINI/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_V4/  \/\/#define MARAUDER_V4/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_V6/  \/\/#define MARAUDER_V6/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_V6_1/  \/\/#define MARAUDER_V6_1/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_KIT/  \/\/#define MARAUDER_KIT/' esp32_marauder/configs.h
+          sed -i 's/^  #define GENERIC_ESP32/  \/\/#define GENERIC_ESP32/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_FLIPPER/  \/\/#define MARAUDER_FLIPPER/' esp32_marauder/configs.h
+          sed -i 's/^  #define ESP32_LDDB/  \/\/#define ESP32_LDDB/' esp32_marauder/configs.h
+          sed -i 's/^  #define MARAUDER_DEV_BOARD_PRO/  \/\/#define MARAUDER_DEV_BOARD_PRO/' esp32_marauder/configs.h
+          sed -i 's/^  \/\/#define MARAUDER_M5STICKC/  #define MARAUDER_M5STICKC/' esp32_marauder/configs.h
+      #    sed -i 's/^  \/\/#define MARAUDER_M5STICKCP2/  #define MARAUDER_M5STICKCP2/' esp32_marauder/configs.h       
+
+      - name: Build Marauder for Marauder M5StickC Plus 2
+        uses: ArminJo/arduino-test-compile@v3.2.1
+        with:
+          sketch-names: esp32_marauder.ino
+          arduino-board-fqbn: m5stack:esp32:m5stack_stickc_plus2:PartitionScheme=min_spiffs
+          extra-arduino-cli-args: "--warnings none"
+          
+
+      - name: Rename Marauder M5StickC plus 2 bin
+        run: |
+          mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bin ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.bin
+          mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.elf ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.elf
 
       - name: Display finished bins
         run: |
@@ -496,6 +557,13 @@ jobs:
         with:
           name: esp32_marauder.marauder_dev_board_pro.bin
           path: ./esp32_marauder/build/esp32.esp32.d32/esp32_marauder.marauder_dev_board_pro.bin
+          retention-days: 5
+
+      - name: 'Upload Marauder M5StickC Plus 2 Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: esp32_marauder.m5stickc_plus2.bin
+          path: ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.*
           retention-days: 5
           
       - name: 'Upload Marauder M5StickC Plus Artifact'
