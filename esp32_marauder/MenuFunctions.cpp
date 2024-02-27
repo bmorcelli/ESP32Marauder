@@ -1962,7 +1962,6 @@ void MenuFunctions::showMenuList(Menu * menu, int layer)
 // Function to add MenuNodes to a menu
 void MenuFunctions::addNodes(Menu * menu, String name, uint16_t color, Menu * child, int place, std::function<void()> callable, bool selected, String command)
 {
-  Serial.println(name);
   TFT_eSPI_Button new_button;
   menu->list->add(MenuNode{name, false, color, place, &new_button, selected, callable});
   //menu->list->add(MenuNode{name, false, color, place, selected, callable});
