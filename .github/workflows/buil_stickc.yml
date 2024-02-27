@@ -120,6 +120,10 @@ jobs:
           pwd
           ls -la
           ls -la CustomTFT_eSPI
+
+      - name: Install esptool
+        run: |
+          pip install -U esptool
           
       - name: Modify platform.txt in m5stack boards
         run: |
@@ -142,11 +146,22 @@ jobs:
           arduino-board-fqbn: m5stack:esp32:m5stack_stickc_plus2:PartitionScheme=min_spiffs
           extra-arduino-cli-args: "--warnings none"
           
+      - name: Create Complete Firmware Binary (Bootloader/Partitions/App)
+        run: |
+          set -x
+          esptool.py --chip esp32 merge_bin --output esp32_marauder.m5stickc_plus2.Complete.bin \
+              0x1000 esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.partitions.bin \
+              0x8000 esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bootloader.bin \
+              0x10000 esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bin
 
       - name: Rename Marauder M5StickC plus 2 bin
         run: |
           mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.bin ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.bin
-          mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.elf ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.elf
+        
+        # Uncomment next line to export .elf for debugging
+        #  mv ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.ino.elf ./esp32_marauder/build/m5stack.esp32.m5stack_stickc_plus2/esp32_marauder.m5stickc_plus2.elf
+
+
 
       - name: Display finished bins
         run: |
