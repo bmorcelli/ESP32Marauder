@@ -168,7 +168,10 @@ void setup()
   #if (defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2))
     axp192_obj.begin();
   #endif
-  
+  #if defined(MARAUDER_M5STICKCP2) // Prevent StickCP2 from turning off when disconnect USB cable
+    pinMode(POWER_HOLD_PIN, OUTPUT);
+    digitalWrite(POWER_HOLD_PIN, HIGH);
+  #endif
   //pinMode(FLASH_BUTTON, INPUT);
 
   #ifdef HAS_SCREEN
