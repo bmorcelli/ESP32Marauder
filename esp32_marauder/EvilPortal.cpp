@@ -105,7 +105,7 @@ bool EvilPortal::setHtml() {
     #endif
     Serial.println("Could not find /" + this->target_html_name + ". Use stopscan...");
     Serial.println("Using Hardcoded HTML.");
-    
+    String html = "";
     html = "<!DOCTYPE html>"
 "<html>"
 "<head>"
