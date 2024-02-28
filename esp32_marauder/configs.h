@@ -200,8 +200,6 @@
     #endif
     #if defined(MARAUDER_M5STICKCP2) // Prevent StickCP2 from turning off when disconnect USB cable
         #define POWER_HOLD_PIN 4
-        pinMode(POWER_HOLD_PIN, OUTPUT);
-        digitalWrite(POWER_HOLD_PIN, HIGH);
     #endif
   #endif
   //// END POWER MANAGEMENT
