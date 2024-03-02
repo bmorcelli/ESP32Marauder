@@ -1,13 +1,8 @@
 #include "stickcLED.h"
 // NB M5Stick C Plus LED is active low, so digitalWrite() calls are inverted
 
-#ifdef MARAUDER_M5STICKCP2
-    #define M5LED_ON HIGH
-    #define M5LED_OFF LOW
-#else
-    #define M5LED_ON LOW
-    #define M5LED_OFF HIGH
-#endif
+#define M5LED_ON HIGH
+#define M5LED_OFF LOW
 
 void stickcLED::RunSetup() {
     pinMode(STICKC_LED_PIN, OUTPUT);
