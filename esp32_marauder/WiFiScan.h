@@ -331,6 +331,7 @@ class WiFiScan
     void RunLvJoinWiFi(uint8_t scan_mode, uint16_t color);
     void RunEvilPortal(uint8_t scan_mode, uint16_t color);
     bool checkMem();
+    void parseBSSID(const char* bssidStr, uint8_t* bssid);
 
 
   public:
@@ -385,6 +386,10 @@ class WiFiScan
     void RunClearSSIDs();
     void RunClearAPs();
     void RunClearStations();
+    void RunSaveSSIDList(bool save_as = true);
+    void RunLoadSSIDList();
+    void RunSaveAPList(bool save_as = true);
+    void RunLoadAPList();
     void channelHop();
     uint8_t currentScanMode = 0;
     void main(uint32_t currentTime);
@@ -395,6 +400,7 @@ class WiFiScan
     bool save_serial = false;
     void startPcap(String file_name);
     void startLog(String file_name);
+    String macToString(const Station& station);
 
     static void getMAC(char *addr, uint8_t* data, uint16_t offset);
     static void pwnSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t type);
