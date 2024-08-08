@@ -185,7 +185,26 @@ jobs:
           sed -i 's/^  \/\/#define MARAUDER_FLIPPER/  #define MARAUDER_FLIPPER/' esp32_marauder/configs.h
           sed -i 's/^  #define ESP32_LDDB/  \/\/#define ESP32_LDDB/' esp32_marauder/configs.h
           sed -i 's/^  #define MARAUDER_DEV_BOARD_PRO/  \/\/#define MARAUDER_DEV_BOARD_PRO/' esp32_marauder/configs.h
-                    
+                          
+      - name: Build Marauder for Flipper Zero WiFi Dev Board
+        uses: ArminJo/arduino-test-compile@v3.2.1
+        with:
+          sketch-names: esp32_marauder.ino
+          libraries: |
+           ./CustomAsyncTCP
+           ./CustomMicroNMEA
+           ./CustomESPAsyncWebServer
+           ./CustomTFT_eSPI
+           ./Customlv_arduino
+           ./CustomJPEGDecoder
+           ./CustomNimBLE-Arduino
+           ./CustomAdafruit_NeoPixel
+           ./CustomArduinoJson
+           ./CustomLinkedList
+           ./CustomEspSoftwareSerial
+          arduino-board-fqbn: esp32:esp32:esp32s2:PartitionScheme=min_spiffs,FlashSize=4M,PSRAM=enabled
+          extra-arduino-cli-args: "--warnings none"
+
       - name: Configure TFT_eSPI and configs.h for OG Marauder
         run: |
           pwd
