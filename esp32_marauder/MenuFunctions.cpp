@@ -304,8 +304,10 @@ MenuFunctions::MenuFunctions()
   }
   
   // GFX Function to build a list showing all APs scanned
-  void MenuFunctions::addAPGFX(){
+  void MenuFunctions::addAPGFX(String type){
+    extern WiFiScan wifi_scan_obj;
     extern LinkedList<AccessPoint>* access_points;
+    extern LinkedList<AirTag>* airtags;
   
     lv_obj_t * list1 = lv_list_create(lv_scr_act(), NULL);
     lv_obj_set_size(list1, 160, 200);
@@ -319,24 +321,111 @@ MenuFunctions::MenuFunctions()
     list_btn = lv_list_add_btn(list1, LV_SYMBOL_CLOSE, text09);
     lv_obj_set_event_cb(list_btn, ap_list_cb);
   
-    for (int i = 0; i < access_points->size(); i++) {
-      char buf[access_points->get(i).essid.length() + 1] = {};
-      access_points->get(i).essid.toCharArray(buf, access_points->get(i).essid.length() + 1);
-      
-      list_btn = lv_list_add_btn(list1, LV_SYMBOL_WIFI, buf);
-      lv_btn_set_checkable(list_btn, true);
-      lv_obj_set_event_cb(list_btn, ap_list_cb);
-  
-      if (access_points->get(i).selected)
-        lv_btn_toggle(list_btn);
+    if (type == "AP") {
+      for (int i = 0; i < access_points->size(); i++) {
+        char buf[access_points->get(i).essid.length() + 1] = {};
+        access_points->get(i).essid.toCharArray(buf, access_points->get(i).essid.length() + 1);
+        
+        list_btn = lv_list_add_btn(list1, LV_SYMBOL_WIFI, buf);
+        lv_btn_set_checkable(list_btn, true);
+        lv_obj_set_event_cb(list_btn, ap_list_cb);
+    
+        if (access_points->get(i).selected)
+          lv_btn_toggle(list_btn);
+      }
+    }
+    else if (type == "Airtag") {
+      for (int i = 0; i < airtags->size(); i++) {
+        char buf[airtags->get(i).mac.length() + 1] = {};
+        airtags->get(i).mac.toCharArray(buf, airtags->get(i).mac.length() + 1);
+        
+        list_btn = lv_list_add_btn(list1, LV_SYMBOL_BLUETOOTH, buf);
+        lv_btn_set_checkable(list_btn, true);
+        lv_obj_set_event_cb(list_btn, at_list_cb);
+    
+        //if (airtags->get(i).selected)
+        //  lv_btn_toggle(list_btn);
+      }
     }
   }
   
+  void at_list_cb(lv_obj_t * btn, lv_event_t event) {
+    extern MenuFunctions menu_function_obj;
+    extern WiFiScan wifi_scan_obj;
+    extern LinkedList<AirTag>* airtags;
+    extern Display display_obj;
   
+    String btn_text = lv_list_get_btn_text(btn);
+    String display_string = "";
+    
+    // Button is clicked
+    if (event == LV_EVENT_CLICKED) {
+      if (btn_text != text09) {
+      }
+      // It's the back button
+      else {
+        Serial.println("Exiting...");
+        lv_obj_del_async(lv_obj_get_parent(lv_obj_get_parent(btn)));
+  
+        for (int i = 0; i < airtags->size(); i++) {
+          if (airtags->get(i).selected) {
+            Serial.println("Selected: " + (String)airtags->get(i).mac);
+          }
+        }
+  
+        printf("LV_EVENT_CANCEL\n");
+        menu_function_obj.deinitLVGL();
+        wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
+        display_obj.exit_draw = true; // set everything back to normal
+      }
+    }
+    
+    if (event == LV_EVENT_VALUE_CHANGED) {      
+      if (lv_btn_get_state(btn) == LV_BTN_STATE_CHECKED_RELEASED) {
+        bool do_that_thang = false;
+        for (int i = 0; i < airtags->size(); i++) {
+          if (airtags->get(i).mac == btn_text) {
+            Serial.println("Selecting Airtag: " + (String)airtags->get(i).mac);
+            AirTag at = airtags->get(i);
+            at.selected = true;
+            airtags->set(i, at);
+            do_that_thang = true;
+          }
+          else {
+            AirTag at = airtags->get(i);
+            at.selected = false;
+            airtags->set(i, at);
+          }
+        }
+        // Start spoofing airtag
+        if (do_that_thang) {
+          menu_function_obj.deinitLVGL();
+          lv_obj_del_async(lv_obj_get_parent(lv_obj_get_parent(btn)));
+          wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
+          display_obj.clearScreen();
+          menu_function_obj.orientDisplay();
+          display_obj.clearScreen();
+          menu_function_obj.drawStatusBar();
+          wifi_scan_obj.StartScan(BT_SPOOF_AIRTAG, TFT_WHITE);
+        }
+      }
+      else {
+        for (int i = 0; i < airtags->size(); i++) {
+          if (airtags->get(i).mac == btn_text) {
+            Serial.println("Deselecting Airtag: " + (String)airtags->get(i).mac);
+            AirTag at = airtags->get(i);
+            at.selected = false;
+            airtags->set(i, at);
+          }
+        }
+      }
+    }
+  }
   
   void ap_list_cb(lv_obj_t * btn, lv_event_t event) {
     extern LinkedList<AccessPoint>* access_points;
     extern MenuFunctions menu_function_obj;
+    extern WiFiScan wifi_scan_obj;
   
     String btn_text = lv_list_get_btn_text(btn);
     String display_string = "";
@@ -585,11 +674,15 @@ void MenuFunctions::main(uint32_t currentTime)
           (wifi_scan_obj.currentScanMode == WIFI_ATTACK_RICK_ROLL) ||
           (wifi_scan_obj.currentScanMode == WIFI_ATTACK_BEACON_LIST) ||
           (wifi_scan_obj.currentScanMode == BT_SCAN_ALL) ||
+          (wifi_scan_obj.currentScanMode == BT_SCAN_AIRTAG) ||
+          (wifi_scan_obj.currentScanMode == BT_SCAN_FLIPPER) ||
           (wifi_scan_obj.currentScanMode == BT_ATTACK_SOUR_APPLE) ||
           (wifi_scan_obj.currentScanMode == BT_ATTACK_SWIFTPAIR_SPAM) ||
           (wifi_scan_obj.currentScanMode == BT_ATTACK_SPAM_ALL) ||
           (wifi_scan_obj.currentScanMode == BT_ATTACK_SAMSUNG_SPAM) ||
           (wifi_scan_obj.currentScanMode == BT_ATTACK_GOOGLE_SPAM) ||
+          (wifi_scan_obj.currentScanMode == BT_ATTACK_FLIPPER_SPAM) ||
+          (wifi_scan_obj.currentScanMode == BT_SPOOF_AIRTAG) ||
           (wifi_scan_obj.currentScanMode == BT_SCAN_WAR_DRIVE) ||
           (wifi_scan_obj.currentScanMode == BT_SCAN_WAR_DRIVE_CONT) ||
           (wifi_scan_obj.currentScanMode == BT_SCAN_SKIMMERS))
@@ -649,11 +742,15 @@ void MenuFunctions::main(uint32_t currentTime)
             (wifi_scan_obj.currentScanMode == WIFI_ATTACK_RICK_ROLL) ||
             (wifi_scan_obj.currentScanMode == WIFI_ATTACK_BEACON_LIST) ||
             (wifi_scan_obj.currentScanMode == BT_SCAN_ALL) ||
+            (wifi_scan_obj.currentScanMode == BT_SCAN_AIRTAG) ||
+            (wifi_scan_obj.currentScanMode == BT_SCAN_FLIPPER) ||
             (wifi_scan_obj.currentScanMode == BT_ATTACK_SOUR_APPLE) ||
             (wifi_scan_obj.currentScanMode == BT_ATTACK_SWIFTPAIR_SPAM) ||
             (wifi_scan_obj.currentScanMode == BT_ATTACK_SPAM_ALL) ||
             (wifi_scan_obj.currentScanMode == BT_ATTACK_SAMSUNG_SPAM) ||
             (wifi_scan_obj.currentScanMode == BT_ATTACK_GOOGLE_SPAM) ||
+            (wifi_scan_obj.currentScanMode == BT_ATTACK_FLIPPER_SPAM) ||
+            (wifi_scan_obj.currentScanMode == BT_SPOOF_AIRTAG) ||
             (wifi_scan_obj.currentScanMode == BT_SCAN_WAR_DRIVE) ||
             (wifi_scan_obj.currentScanMode == BT_SCAN_WAR_DRIVE_CONT) ||
             (wifi_scan_obj.currentScanMode == BT_SCAN_SKIMMERS) ||
@@ -1223,6 +1320,7 @@ void MenuFunctions::RunSetup()
 {
   extern LinkedList<AccessPoint>* access_points;
   extern LinkedList<Station>* stations;
+  extern LinkedList<AirTag>* airtags;
 
   this->disable_touch = false;
   
@@ -1256,8 +1354,14 @@ void MenuFunctions::RunSetup()
   // WiFi menu stuff
   wifiSnifferMenu.list = new LinkedList<MenuNode>();
   wifiAttackMenu.list = new LinkedList<MenuNode>();
+  #ifdef HAS_GPS
+    wardrivingMenu.list = new LinkedList<MenuNode>();
+  #endif
   wifiGeneralMenu.list = new LinkedList<MenuNode>();
   wifiAPMenu.list = new LinkedList<MenuNode>();
+  #ifdef HAS_BT
+    airtagMenu.list = new LinkedList<MenuNode>();
+  #endif
   #ifndef HAS_ILI9341
     wifiStationMenu.list = new LinkedList<MenuNode>();
   #endif
@@ -1316,11 +1420,15 @@ void MenuFunctions::RunSetup()
   clearSSIDsMenu.name = text_table1[28];
   clearAPsMenu.name = text_table1[29];
   wifiAPMenu.name = "Access Points";
+  #ifdef HAS_BT
+    airtagMenu.name = "Select Airtag";
+  #endif
   #ifndef HAS_ILI9341
     wifiStationMenu.name = "Select Stations";
   #endif
   #ifdef HAS_GPS
     gpsInfoMenu.name = "GPS Data";
+    wardrivingMenu.name = "Wardriving";
   #endif  
   htmlMenu.name = "EP HTML List";
   #if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
@@ -1354,6 +1462,9 @@ void MenuFunctions::RunSetup()
   });
   this->addNodes(&wifiMenu, text_table1[31], TFT_YELLOW, NULL, SNIFFERS, [this]() {
     this->changeMenu(&wifiSnifferMenu);
+  });
+  this->addNodes(&wifiMenu, "Wardriving", TFT_GREEN, NULL, BEACON_SNIFF, [this]() {
+    this->changeMenu(&wardrivingMenu);
   });
   this->addNodes(&wifiMenu, text_table1[32], TFT_RED, NULL, ATTACKS, [this]() {
     this->changeMenu(&wifiAttackMenu);
@@ -1401,13 +1512,13 @@ void MenuFunctions::RunSetup()
       wifi_scan_obj.StartScan(WIFI_PACKET_MONITOR, TFT_BLUE);
     });
   #endif
-  #ifndef HAS_ILI9341
-    this->addNodes(&wifiSnifferMenu, text_table1[47], TFT_RED, NULL, PWNAGOTCHI, [this]() {
-      display_obj.clearScreen();
-      this->drawStatusBar();
-      wifi_scan_obj.StartScan(WIFI_SCAN_PWN, TFT_RED);
-    });
-  #endif
+  //#ifndef HAS_ILI9341
+  this->addNodes(&wifiSnifferMenu, text_table1[47], TFT_RED, NULL, PWNAGOTCHI, [this]() {
+    display_obj.clearScreen();
+    this->drawStatusBar();
+    wifi_scan_obj.StartScan(WIFI_SCAN_PWN, TFT_RED);
+  });
+  //#endif
   this->addNodes(&wifiSnifferMenu, text_table1[49], TFT_MAGENTA, NULL, BEACON_SNIFF, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -1430,9 +1541,15 @@ void MenuFunctions::RunSetup()
       wifi_scan_obj.StartScan(WIFI_SCAN_SIG_STREN, TFT_CYAN);
     });
   #endif
+
+  // Build Wardriving menu
+  wardrivingMenu.parentMenu = &wifiMenu; // Main Menu is second menu parent
+  this->addNodes(&wardrivingMenu, text09, TFT_LIGHTGREY, NULL, 0, [this]() {
+    this->changeMenu(wardrivingMenu.parentMenu);
+  });
   #ifdef HAS_GPS
     if (gps_obj.getGpsModuleStatus()) {
-      this->addNodes(&wifiSnifferMenu, "Wardrive", TFT_GREEN, NULL, BEACON_SNIFF, [this]() {
+      this->addNodes(&wardrivingMenu, "Wardrive", TFT_GREEN, NULL, BEACON_SNIFF, [this]() {
         display_obj.clearScreen();
         this->drawStatusBar();
         wifi_scan_obj.StartScan(WIFI_SCAN_WAR_DRIVE, TFT_GREEN);
@@ -1441,7 +1558,7 @@ void MenuFunctions::RunSetup()
   #endif
   #ifdef HAS_GPS
     if (gps_obj.getGpsModuleStatus()) {
-      this->addNodes(&wifiSnifferMenu, "Station Wardrive", TFT_ORANGE, NULL, PROBE_SNIFF, [this]() {
+      this->addNodes(&wardrivingMenu, "Station Wardrive", TFT_ORANGE, NULL, PROBE_SNIFF, [this]() {
         display_obj.clearScreen();
         this->drawStatusBar();
         wifi_scan_obj.StartScan(WIFI_SCAN_STATION_WAR_DRIVE, TFT_ORANGE);
@@ -1646,6 +1763,7 @@ void MenuFunctions::RunSetup()
       this->changeMenu(wifiAPMenu.parentMenu);
     });
 
+
     // Select Stations on Mini v1
     /*
     this->addNodes(&wifiGeneralMenu, "Select Stations", TFT_CYAN, NULL, KEYBOARD_ICO, [this](){
@@ -1722,7 +1840,7 @@ void MenuFunctions::RunSetup()
           for (int x = 0; x < access_points->get(i).stations->size(); x++) {
             int cur_ap_sta = access_points->get(i).stations->get(x);
 
-            this->addNodes(&wifiStationMenu, wifi_scan_obj.macToString(stations->get(cur_ap_sta)), TFT_CYAN, NULL, KEYBOARD_ICO, [this, i, cur_ap_sta, x](){
+            this->addNodes(&wifiStationMenu, macToString(stations->get(cur_ap_sta)), TFT_CYAN, NULL, KEYBOARD_ICO, [this, i, cur_ap_sta, x](){
             Station new_sta = stations->get(cur_ap_sta);
             new_sta.selected = !stations->get(cur_ap_sta).selected;
 
@@ -1836,6 +1954,16 @@ void MenuFunctions::RunSetup()
     this->drawStatusBar();
     wifi_scan_obj.StartScan(BT_SCAN_ALL, TFT_GREEN);
   });
+  this->addNodes(&bluetoothSnifferMenu, "Flipper Sniff", TFT_ORANGE, NULL, FLIPPER, [this]() {
+    display_obj.clearScreen();
+    this->drawStatusBar();
+    wifi_scan_obj.StartScan(BT_SCAN_FLIPPER, TFT_ORANGE);
+  });
+  this->addNodes(&bluetoothSnifferMenu, "Airtag Sniff", TFT_WHITE, NULL, BLUETOOTH_SNIFF, [this]() {
+    display_obj.clearScreen();
+    this->drawStatusBar();
+    wifi_scan_obj.StartScan(BT_SCAN_AIRTAG, TFT_WHITE);
+  });
   #ifdef HAS_GPS
     if (gps_obj.getGpsModuleStatus()) {
       this->addNodes(&bluetoothSnifferMenu, "BT Wardrive", TFT_CYAN, NULL, BLUETOOTH_SNIFF, [this]() {
@@ -1879,13 +2007,80 @@ void MenuFunctions::RunSetup()
   this->addNodes(&bluetoothAttackMenu, "Google BLE Spam", TFT_PURPLE, NULL, LANGUAGE, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
-    wifi_scan_obj.StartScan(BT_ATTACK_GOOGLE_SPAM, TFT_RED);
+    wifi_scan_obj.StartScan(BT_ATTACK_GOOGLE_SPAM, TFT_PURPLE);
+  });
+  this->addNodes(&bluetoothAttackMenu, "Flipper BLE Spam", TFT_ORANGE, NULL, FLIPPER, [this]() {
+    display_obj.clearScreen();
+    this->drawStatusBar();
+    wifi_scan_obj.StartScan(BT_ATTACK_FLIPPER_SPAM, TFT_ORANGE);
   });
   this->addNodes(&bluetoothAttackMenu, "BLE Spam All", TFT_MAGENTA, NULL, DEAUTH_SNIFF, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
     wifi_scan_obj.StartScan(BT_ATTACK_SPAM_ALL, TFT_MAGENTA);
   });
+
+  #ifdef HAS_ILI9341
+    this->addNodes(&bluetoothAttackMenu, "Spoof Airtag", TFT_WHITE, NULL, ATTACKS, [this](){
+      display_obj.clearScreen();
+      wifi_scan_obj.currentScanMode = LV_ADD_SSID;
+      wifi_scan_obj.StartScan(LV_ADD_SSID, TFT_WHITE);
+      addAPGFX("Airtag");
+    });
+  #endif
+
+  #ifndef HAS_ILI9341
+    #ifdef HAS_BT
+    // Select Airtag on Mini
+      this->addNodes(&bluetoothAttackMenu, "Spoof Airtag", TFT_WHITE, NULL, ATTACKS, [this](){
+          // Clear nodes and add back button
+          airtagMenu.list->clear();
+          this->addNodes(&airtagMenu, text09, TFT_LIGHTGREY, NULL, 0, [this]() {
+          this->changeMenu(airtagMenu.parentMenu);
+        });
+
+        // Add buttons for all airtags
+        // Find out how big our menu is going to be
+        int menu_limit;
+        if (airtags->size() <= BUTTON_ARRAY_LEN)
+          menu_limit = airtags->size();
+        else
+          menu_limit = BUTTON_ARRAY_LEN;
+
+        // Create the menu nodes for all of the list items
+        for (int i = 0; i < menu_limit; i++) {
+          this->addNodes(&airtagMenu, airtags->get(i).mac, TFT_WHITE, NULL, BLUETOOTH, [this, i](){
+            AirTag new_at = airtags->get(i);
+            new_at.selected = true;
+
+            airtags->set(i, new_at);
+
+            // Set all other airtags to "Not Selected"
+            for (int x = 0; x < airtags->size(); x++) {
+              if (x != i) {
+                AirTag new_atx = airtags->get(x);
+                new_atx.selected = false;
+                airtags->set(x, new_atx);
+              }
+            }
+
+            // Start the spoof
+            display_obj.clearScreen();
+            this->drawStatusBar();
+            wifi_scan_obj.StartScan(BT_SPOOF_AIRTAG, TFT_WHITE);
+
+          });
+        }
+        this->changeMenu(&airtagMenu);
+      });
+
+      airtagMenu.parentMenu = &bluetoothAttackMenu;
+      this->addNodes(&airtagMenu, text09, TFT_LIGHTGREY, NULL, 0, [this]() {
+        this->changeMenu(airtagMenu.parentMenu);
+      });
+    #endif
+
+  #endif
 
   // Device menu
   deviceMenu.parentMenu = &mainMenu;
