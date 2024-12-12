@@ -602,7 +602,7 @@ jobs:
            ./CustomArduinoJson
            ./CustomLinkedList
            ./CustomEspSoftwareSerial
-          arduino-board-fqbn: esp32:esp32:m5stack_stickc:PartitionScheme=min_spiffs
+          arduino-board-fqbn: esp32:esp32:m5stick-c:PartitionScheme=min_spiffs
           extra-arduino-cli-args: "--warnings none"
           arduino-platform: esp32:esp32@2.0.11
           platform-url: https://github.com/espressif/arduino-esp32/releases/download/2.0.11/package_esp32_dev_index.json
@@ -646,7 +646,7 @@ jobs:
            ./CustomArduinoJson
            ./CustomLinkedList
            ./CustomEspSoftwareSerial
-          arduino-board-fqbn: esp32:esp32:m5stack_stickc_plus2:PartitionScheme=min_spiffs
+          arduino-board-fqbn: esp32:esp32:m5stick-c:PartitionScheme=min_spiffs
           extra-arduino-cli-args: "--warnings none"
           
       - name: Rename Marauder M5StickC Plus 2 bin
