@@ -194,8 +194,19 @@ jobs:
           
       - name: Modify platform.txt
         run: |
-          for i in $(find /home/runner/.arduino15/packages/esp32/tools/esp32-arduino-libs -name "ld_flags"); do
-            sed -i 's/-mlongcalls /-mlongcalls -zmuldefs /' "$i"
+          # for i in $(find /home/runner/.arduino15/packages/esp32/tools/esp32-arduino-libs -name "ld_flags"); do
+          #  sed -i 's/-mlongcalls /-mlongcalls -zmuldefs /' "$i"
+          # done
+
+          for i in $(find /home/runner/.arduino15/packages/esp32/hardware/esp32/ -name "platform.txt"); do
+            sed -i 's/compiler.c.elf.libs.esp32c3=/compiler.c.elf.libs.esp32c3=-zmuldefs /' "$i"
+            sed -i 's/compiler.c.elf.libs.esp32s3=/compiler.c.elf.libs.esp32s3=-zmuldefs /' "$i"
+            sed -i 's/compiler.c.elf.libs.esp32s2=/compiler.c.elf.libs.esp32s2=-zmuldefs /' "$i"
+            sed -i 's/compiler.c.elf.libs.esp32=/compiler.c.elf.libs.esp32=-zmuldefs /' "$i"
+            cat "$i" | grep compiler.c.elf.libs.esp32c3
+            cat "$i" | grep compiler.c.elf.libs.esp32s3
+            cat "$i" | grep compiler.c.elf.libs.esp32s2
+            cat "$i" | grep compiler.c.elf.libs.esp32
           done
           
       - name: Configure configs.h for Flipper Zero WiFi Dev Board
