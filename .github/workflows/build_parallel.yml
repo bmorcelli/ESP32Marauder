@@ -2,6 +2,12 @@ name: Build and Push Parallel
 
 on:
   workflow_dispatch:
+    inputs:
+      export_merged:
+        description: "Export merged binaries"
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - master
@@ -13,6 +19,8 @@ jobs:
   compile_sketch:
     name: build ${{ matrix.board.name }}
     runs-on: ubuntu-latest
+    env:
+      EXPORT_MERGED: ${{ github.event.inputs.export_merged || 'true' }} # always create merged artifacts on push
     strategy:
       fail-fast: false
       matrix:
@@ -258,6 +266,20 @@ jobs:
           OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_${{ matrix.board.file_name }}.bin
           VERSION_DOT=${VERSION_DOT}
 
+          if [ "${{ env.EXPORT_MERGED }}" == "true" ]; then
+            MERGED_BIN=$BUILD_DIR/esp32_marauder.${{ matrix.board.file_name }}_merged.bin
+            esptool.py --chip esp32s3 merge_bin -o $MERGED_BIN \
+            ${{ matrix.board.addr }} ./esp32_marauder/build/esp32.esp32.${{ matrix.board.build_dir }}/esp32_marauder.ino.bootloader.bin \
+            0x8000 ./esp32_marauder/build/esp32.esp32.${{ matrix.board.build_dir }}/esp32_marauder.ino.partitions.bin \
+            0x10000 ./esp32_marauder/build/esp32.esp32.${{ matrix.board.build_dir }}/esp32_marauder.ino.bin
+
+            MERGED_OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_${{ matrix.board.file_name }}_merged.bin
+            mv "$MERGED_BIN" "$BUILD_DIR/$MERGED_OUTPUT_BIN"
+
+            echo "merged_artifact_name=$MERGED_OUTPUT_BIN" >> $GITHUB_ENV
+            echo "merged_artifact_path=$BUILD_DIR/$MERGED_OUTPUT_BIN" >> $GITHUB_ENV
+          fi
+
           mv "$INPUT_BIN" "$BUILD_DIR/$OUTPUT_BIN"
 
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
@@ -267,6 +289,14 @@ jobs:
         with:
           name: ${{ env.artifact_name }}
           path: ${{ env.artifact_path }}
+          retention-days: 5
+
+      - name: Upload ${{ matrix.board.name }} Merged Artifact
+        if: ${{ env.EXPORT_MERGED == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.merged_artifact_name }}
+          path: ${{ env.merged_artifact_path }}
           retention-days: 5
 
   post_compile_steps:

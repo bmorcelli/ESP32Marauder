@@ -27,6 +27,10 @@ void LedInterface::RunSetup() {
 }
 
 void LedInterface::main(uint32_t currentTime) {
+  if ((currentTime != 0) && (currentTime - this->last_led_update < LED_UPDATE_INTERVAL))
+    return;
+  this->last_led_update = currentTime;
+
   if ((!settings_obj.loadSetting<bool>("EnableLED")) ||
       (this->current_mode == MODE_OFF)) {
     this->ledOff();

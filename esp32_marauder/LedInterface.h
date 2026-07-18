@@ -11,6 +11,7 @@
 #endif
 
 #define Pixels 1
+#define LED_UPDATE_INTERVAL 30 // ms between strip.show() calls; RMT driver install/uninstall per call is expensive
 
 extern Settings settings_obj;
 
@@ -22,6 +23,7 @@ class LedInterface {
 
   private:
     uint32_t initTime = 0;
+    uint32_t last_led_update = 0;
 
     int current_fade_itter = 1;
     int wheel_pos = 255;
