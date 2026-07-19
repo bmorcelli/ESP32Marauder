@@ -21,11 +21,11 @@
 #endif
 
 #ifdef HAS_SCREEN
-  extern MenuFunctions menu_function_obj;
-  extern Display display_obj;
+  extern MenuFunctions* menu_function_obj;
+  extern Display* display_obj;
 #endif
 
-extern WiFiScan wifi_scan_obj;
+extern WiFiScan* wifi_scan_obj;
 //extern Web web_obj;
 #ifdef HAS_SD
   extern SDInterface sd_obj;

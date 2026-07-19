@@ -41,7 +41,7 @@
   #endif
 #endif
 
-extern WiFiScan wifi_scan_obj;
+extern WiFiScan* wifi_scan_obj;
 extern SDInterface sd_obj;
 // #ifdef HAS_BATTERY
 extern BatteryInterface battery_obj;

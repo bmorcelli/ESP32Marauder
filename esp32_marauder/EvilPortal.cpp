@@ -365,9 +365,9 @@ void EvilPortal::sendToDisplay(String msg) {
     {
       display_string.concat(" ");
     }
-    display_obj.loading = true;
-    display_obj.display_buffer->add(display_string);
-    display_obj.loading = false;
+    display_obj->loading = true;
+    display_obj->display_buffer->add(display_string);
+    display_obj->loading = false;
   #endif
 }
 

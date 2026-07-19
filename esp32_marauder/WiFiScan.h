@@ -226,7 +226,7 @@
 extern EvilPortal evil_portal_obj;
 
 #ifdef HAS_SCREEN
-  extern Display display_obj;
+  extern Display* display_obj;
 #endif
 #ifdef HAS_SD
   extern SDInterface sd_obj;

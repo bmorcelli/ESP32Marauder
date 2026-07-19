@@ -69,7 +69,7 @@ https://www.online-utility.org/image/convert/to/XBM
 
 #endif
 
-WiFiScan wifi_scan_obj;
+WiFiScan* wifi_scan_obj = nullptr;
 EvilPortal evil_portal_obj;
 Buffer buffer_obj;
 Settings settings_obj;
@@ -84,8 +84,8 @@ CommandLine cli_obj;
 #endif
 
 #ifdef HAS_SCREEN
-  Display display_obj;
-  MenuFunctions menu_function_obj;
+  Display* display_obj = nullptr;
+  MenuFunctions* menu_function_obj = nullptr;
 #endif
 
 #if defined(HAS_SD) && !defined(HAS_C5_SD)
@@ -234,6 +234,20 @@ void setup()
 
   Serial.begin(115200);
 
+  // Allocated here instead of at global scope: these are the three largest
+  // objects in the sketch, and constructing them only after the Arduino/IDF
+  // runtime is up (rather than during global static init, before setup())
+  // avoids relying on initialization order across translation units.
+  wifi_scan_obj = new WiFiScan();
+  #ifdef HAS_SCREEN
+    // TFT_eSPI's gfxFont pointer (nested inside Display::tft) is never
+    // explicitly initialized in its constructor; it relied on living in
+    // .bss (implicitly zeroed) as a global. Zero it ourselves so it still
+    // reads as nullptr instead of heap garbage.
+    display_obj = new (calloc(1, sizeof(Display))) Display();
+    menu_function_obj = new MenuFunctions();
+  #endif
+
   #ifdef HAS_ACT_LED
     pinMode(ACT_LED_PIN, OUTPUT);
     delay(100);
@@ -301,8 +315,8 @@ void setup()
   #endif
 
   #ifdef HAS_SCREEN
-    display_obj.RunSetup();
-    display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    display_obj->RunSetup();
+    display_obj->tft.setTextColor(TFT_WHITE, TFT_BLACK);
   #endif
 
   // Init PWM brightness AFTER display init (so ledcAttach overrides TFT_eSPI's pinMode)
@@ -313,13 +327,13 @@ void setup()
 
   #ifdef HAS_SCREEN
     #if !defined(MARAUDER_CARDPUTER) && !defined(MARAUDER_CARDPUTER_ADV)
-      display_obj.tft.drawCentreString("ESP32 Marauder", TFT_WIDTH/2, TFT_HEIGHT * 0.33, 1);
-      display_obj.tft.drawCentreString("JustCallMeKoko", TFT_WIDTH/2, TFT_HEIGHT * 0.5, 1);
-      display_obj.tft.drawCentreString(display_obj.version_number, TFT_WIDTH/2, TFT_HEIGHT * 0.66, 1);
+      display_obj->tft.drawCentreString("ESP32 Marauder", TFT_WIDTH/2, TFT_HEIGHT * 0.33, 1);
+      display_obj->tft.drawCentreString("JustCallMeKoko", TFT_WIDTH/2, TFT_HEIGHT * 0.5, 1);
+      display_obj->tft.drawCentreString(display_obj->version_number, TFT_WIDTH/2, TFT_HEIGHT * 0.66, 1);
     #else
-      display_obj.tft.drawCentreString("ESP32 Marauder", TFT_HEIGHT/2, TFT_WIDTH * 0.33, 1);
-      display_obj.tft.drawCentreString("JustCallMeKoko", TFT_HEIGHT/2, TFT_WIDTH * 0.5, 1);
-      display_obj.tft.drawCentreString(display_obj.version_number, TFT_HEIGHT/2, TFT_WIDTH * 0.66, 1);
+      display_obj->tft.drawCentreString("ESP32 Marauder", TFT_HEIGHT/2, TFT_WIDTH * 0.33, 1);
+      display_obj->tft.drawCentreString("JustCallMeKoko", TFT_HEIGHT/2, TFT_WIDTH * 0.5, 1);
+      display_obj->tft.drawCentreString(display_obj->version_number, TFT_HEIGHT/2, TFT_WIDTH * 0.66, 1);
     #endif
   #endif
 
@@ -330,7 +344,7 @@ void setup()
     // Do some stealth mode stuff
     #ifdef HAS_BUTTONS
       if (c_btn.justPressed()) {
-        display_obj.headless_mode = true;
+        display_obj->headless_mode = true;
 
         backlightOff();
       }
@@ -357,11 +371,11 @@ void setup()
     #endif
   #endif
 
-  wifi_scan_obj.RunSetup();
+  wifi_scan_obj->RunSetup();
 
   #ifdef HAS_SCREEN
-    display_obj.tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    display_obj.tft.drawCentreString("Initializing...", TFT_WIDTH/2, TFT_HEIGHT * 0.82, 1);
+    display_obj->tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    display_obj->tft.drawCentreString("Initializing...", TFT_WIDTH/2, TFT_HEIGHT * 0.82, 1);
   #endif
 
   evil_portal_obj.setup();
@@ -390,14 +404,14 @@ void setup()
   #endif
 
   #ifdef HAS_SCREEN  
-    display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    display_obj->tft.setTextColor(TFT_WHITE, TFT_BLACK);
   #endif
 
   #ifdef HAS_SCREEN
     #if defined(MARAUDER_CARDPUTER) || defined(MARAUDER_CARDPUTER_ADV)
-      display_obj.clearScreen();
+      display_obj->clearScreen();
     #endif
-    menu_function_obj.RunSetup();
+    menu_function_obj->RunSetup();
   #endif
 
   /*char ssidBuf[64] = {0};  // or prefill with existing SSID
@@ -408,9 +422,9 @@ void setup()
     Serial.println(F("User exited keyboard"));
   }
 
-  menu_function_obj.changeMenu(menu_function_obj.current_menu);*/
+  menu_function_obj->changeMenu(menu_function_obj->current_menu);*/
 
-  wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
+  wifi_scan_obj->StartScan(WIFI_SCAN_OFF);
   
   cli_obj.RunSetup();
 }
@@ -430,12 +444,12 @@ void loop()
   #if (defined(HAS_ILI9341) && !defined(MARAUDER_CYD_2USB))
     #ifdef HAS_BUTTONS
       if (c_btn.isHeld()) {
-        if (menu_function_obj.disable_touch)
-          menu_function_obj.disable_touch = false;
+        if (menu_function_obj->disable_touch)
+          menu_function_obj->disable_touch = false;
         else
-          menu_function_obj.disable_touch = true;
+          menu_function_obj->disable_touch = true;
 
-        menu_function_obj.updateStatusBar();
+        menu_function_obj->updateStatusBar();
 
         while (!c_btn.justReleased())
           delay(1);
@@ -445,7 +459,7 @@ void loop()
 
   // Update all of our objects
   cli_obj.main(currentTime);
-  wifi_scan_obj.main(currentTime);
+  wifi_scan_obj->main(currentTime);
 
   #ifdef HAS_GPS
     gps_obj.main();
@@ -457,10 +471,10 @@ void loop()
   #ifdef HAS_BATTERY
     battery_obj.main(currentTime);
   #endif
-  if ((wifi_scan_obj.currentScanMode != WIFI_PACKET_MONITOR) ||
+  if ((wifi_scan_obj->currentScanMode != WIFI_PACKET_MONITOR) ||
       (mini)) {
     #ifdef HAS_SCREEN
-      menu_function_obj.main(currentTime);
+      menu_function_obj->main(currentTime);
     #endif
   }
   #ifdef HAS_FLIPPER_LED

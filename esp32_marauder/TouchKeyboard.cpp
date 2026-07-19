@@ -4,7 +4,7 @@
 
 #ifdef HAS_TOUCH
 
-extern Display display_obj;
+extern Display* display_obj;
 
 // Keyboard will occupy the bottom half of the screen.
 static inline int16_t kbHeight() {
@@ -43,22 +43,22 @@ static void drawTextArea(const char *title, const char *buffer) {
   int16_t areaHeight = TFT_HEIGHT - kbHeight();
 
   // Clear text area
-  display_obj.tft.fillRect(0, 0, TFT_WIDTH, areaHeight, TFT_BLACK);
+  display_obj->tft.fillRect(0, 0, TFT_WIDTH, areaHeight, TFT_BLACK);
 
   int16_t cursorY = 2;
 
   // Optional title
   if (title && title[0] != '\0') {
-    display_obj.tft.setCursor(2, cursorY);
-    display_obj.tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    display_obj.tft.print(title);
+    display_obj->tft.setCursor(2, cursorY);
+    display_obj->tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    display_obj->tft.print(title);
     cursorY += 16;
   }
 
   // Draw current text
-  display_obj.tft.setCursor(2, cursorY);
-  display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  display_obj.tft.print(buffer ? buffer : "");
+  display_obj->tft.setCursor(2, cursorY);
+  display_obj->tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  display_obj->tft.print(buffer ? buffer : "");
 }
 
 static void drawKeyboard(KeyboardLayout layout, bool caps) {
@@ -73,8 +73,8 @@ static void drawKeyboard(KeyboardLayout layout, bool caps) {
   const int16_t cellW = kW / maxCols;
   const int16_t cellH = kH / rows;
 
-  display_obj.tft.fillRect(kX, kY, kW, kH, TFT_DARKGREY);
-  display_obj.tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
+  display_obj->tft.fillRect(kX, kY, kW, kH, TFT_DARKGREY);
+  display_obj->tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
 
   // Choose row strings based on layout
   const char *rowStringsAlpha[4] = {
@@ -115,10 +115,10 @@ static void drawKeyboard(KeyboardLayout layout, bool caps) {
       int16_t keyY = rowY;
 
       // Key border
-      display_obj.tft.drawRect(keyX, keyY, cellW, cellH, TFT_BLACK);
+      display_obj->tft.drawRect(keyX, keyY, cellW, cellH, TFT_BLACK);
 
       // Label
-      display_obj.tft.setCursor(keyX + cellW / 2 - 3, keyY + cellH / 2 - 4);
+      display_obj->tft.setCursor(keyX + cellW / 2 - 3, keyY + cellH / 2 - 4);
       char c = row[i];
 
       // Apply CAPS on alpha letters
@@ -131,7 +131,7 @@ static void drawKeyboard(KeyboardLayout layout, bool caps) {
       }
 
       char s[2] = { c, '\0' };
-      display_obj.tft.print(s);
+      display_obj->tft.print(s);
     }
 
     // Draw CAPS key for alpha layout on row 3 (rightmost two columns)
@@ -139,13 +139,13 @@ static void drawKeyboard(KeyboardLayout layout, bool caps) {
       int16_t capsX = kX + 8 * cellW;
       int16_t capsW = 2 * cellW;
 
-      display_obj.tft.drawRect(capsX, rowY, capsW, cellH, TFT_BLACK);
-      display_obj.tft.setCursor(capsX + 4, rowY + cellH / 2 - 4);
+      display_obj->tft.drawRect(capsX, rowY, capsW, cellH, TFT_BLACK);
+      display_obj->tft.setCursor(capsX + 4, rowY + cellH / 2 - 4);
       // Show different label based on state
       if (caps) {
-        display_obj.tft.print("caps");
+        display_obj->tft.print("caps");
       } else {
-        display_obj.tft.print("CAPS");
+        display_obj->tft.print("CAPS");
       }
     }
   }
@@ -165,30 +165,30 @@ static void drawKeyboard(KeyboardLayout layout, bool caps) {
   int16_t x5 = x4 + segW;      // end OK
 
   // CANCEL
-  display_obj.tft.drawRect(x0, rowY, segW, cellH, TFT_BLACK);
-  display_obj.tft.setCursor(x0 + 4, rowY + cellH / 2 - 4);
-  display_obj.tft.print("CANCEL");
+  display_obj->tft.drawRect(x0, rowY, segW, cellH, TFT_BLACK);
+  display_obj->tft.setCursor(x0 + 4, rowY + cellH / 2 - 4);
+  display_obj->tft.print("CANCEL");
 
   // SYMB / ABC
-  display_obj.tft.drawRect(x1, rowY, segW, cellH, TFT_BLACK);
-  display_obj.tft.setCursor(x1 + 4, rowY + cellH / 2 - 4);
+  display_obj->tft.drawRect(x1, rowY, segW, cellH, TFT_BLACK);
+  display_obj->tft.setCursor(x1 + 4, rowY + cellH / 2 - 4);
   if (layout == LAYOUT_ALPHA) {
-    display_obj.tft.print("SYMB");
+    display_obj->tft.print("SYMB");
   } else {
-    display_obj.tft.print("ABC");
+    display_obj->tft.print("ABC");
   }
 
-  display_obj.tft.drawRect(x2, rowY, (x3 - x2), cellH, TFT_BLACK);
-  display_obj.tft.setCursor(x2 + 4, rowY + cellH / 2 - 4);
-  display_obj.tft.print("SPACE");
+  display_obj->tft.drawRect(x2, rowY, (x3 - x2), cellH, TFT_BLACK);
+  display_obj->tft.setCursor(x2 + 4, rowY + cellH / 2 - 4);
+  display_obj->tft.print("SPACE");
 
-  display_obj.tft.drawRect(x3, rowY, (x4 - x3), cellH, TFT_BLACK);
-  display_obj.tft.setCursor(x3 + 4, rowY + cellH / 2 - 4);
-  display_obj.tft.print("BKSP");
+  display_obj->tft.drawRect(x3, rowY, (x4 - x3), cellH, TFT_BLACK);
+  display_obj->tft.setCursor(x3 + 4, rowY + cellH / 2 - 4);
+  display_obj->tft.print("BKSP");
 
-  display_obj.tft.drawRect(x4, rowY, (x5 - x4), cellH, TFT_BLACK);
-  display_obj.tft.setCursor(x4 + 4, rowY + cellH / 2 - 4);
-  display_obj.tft.print("OK");
+  display_obj->tft.drawRect(x4, rowY, (x5 - x4), cellH, TFT_BLACK);
+  display_obj->tft.setCursor(x4 + 4, rowY + cellH / 2 - 4);
+  display_obj->tft.print("OK");
 }
 
 static bool appendChar(char *buffer, size_t bufLen, char c) {
@@ -370,7 +370,7 @@ bool keyboardInput(char *buffer, size_t bufLen, const char *title) {
 
   while (true) {
     uint16_t x = 0, y = 0;
-    uint8_t touched = display_obj.updateTouch(&x, &y, TOUCH_THRESHOLD);
+    uint8_t touched = display_obj->updateTouch(&x, &y, TOUCH_THRESHOLD);
 
     if (touched) {
       uint32_t now = millis();

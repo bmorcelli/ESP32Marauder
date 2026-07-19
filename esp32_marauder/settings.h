@@ -14,7 +14,7 @@
 #ifdef HAS_SCREEN
   #include "Display.h"
 
-  extern Display display_obj;
+  extern Display* display_obj;
 #endif
 
 #define WDG_KEY_NAME       "wdg_key"   // WDG Wars API key (String)
